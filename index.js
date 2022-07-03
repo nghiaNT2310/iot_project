@@ -140,6 +140,6 @@ connect()
 
 router(app)
 
-app.listen(port,()=>{
+app.listen(process.env.PORT,()=>{
     console.log("Listen on port 3000!")
 })
