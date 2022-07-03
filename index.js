@@ -7,26 +7,37 @@ var session = require('express-session')
 const mqtt = require('mqtt')
 const HeartSensor=require('./models/HeartSensor')
 const HeartSensorData=require('./models/HeartSensorData')
+var awsIot = require('aws-iot-device-sdk');
 
 
-const client  = mqtt.connect('mqtt://broker.hivemq.com:1883')
-client.on('connect', function () {
-    client.subscribe('/ktmt/iot', function (err) {
-     if(err){
-        console.log("subscribed error")
-     }else console.log('Server has subscribed successfully')
-    })
-  })
+var device = awsIot.device({
+    keyPath: './AWS_Rasperry_secrets/private.pem.key',
+    certPath: './AWS_Rasperry_secrets/certificate.pem.crt',
+    caPath: './AWS_Rasperry_secrets/RootCA1.pem',
+    clientId: 'esp32',
+    port: 8883,
+    host: 'aj6h0rvv35htm-ats.iot.us-west-2.amazonaws.com',
+});
 
-client.on('message',(topic,message)=>{
+device
+  .on('connect', function() {
+    console.log('connect');
+    device.subscribe('esp32')
+  });
+
+  // device
+  // .on('message', function(topic, payload) {
+  //   console.log('message', topic, payload.toString());
+  // });
+
+device.on('message', function(topic, payload) {
+    console.log('message', topic, payload.toString());
+    let obj=JSON.parse(payload.toString())
     
-
-    var obj=JSON.parse(message.toString())
-    console.log(obj)
-    HeartSensor.findOne({id_device: obj.id_device })
+    HeartSensor.findOne({Id: obj.Id })
     .then(data=>{
         if(data){
-            HeartSensorData.create(JSON.parse(message.toString()))
+            HeartSensorData.create(JSON.parse(payload.toString()))
             .then(data=>{
                 console.log("add successful")
             })
@@ -39,21 +50,65 @@ client.on('message',(topic,message)=>{
         }
     })
     .catch(err=>{
+        console.log(err)
         console.log("connect bd error")
     })
 
-   
+  });
+
+
+ 
+
+device.on('error',(err)=>{
+    console.log("connect error:",err)
 })
+
+// esp32 {
+//     "Id": "mac",
+//     "heartRate":"80.96",
+//     "bodyTemperature":"36.89",
+//     "bloodPressure":"123.66"
+//   }
+// const client  = mqtt.connect('mqtt://broker.hivemq.com:1883')
+// client.on('connect', function () {
+//     client.subscribe('/ktmt/iot', function (err) {
+//      if(err){
+//         console.log("subscribed error")
+//      }else console.log('Server has subscribed successfully')
+//     })
+//   })
+
+// client.on('message',(topic,message)=>{
+//     console.log(message.toString())
+
+//     var obj=JSON.parse(message.toString())
+//     console.log(obj)
+//     HeartSensor.findOne({id_device: obj.id_device })
+//     .then(data=>{
+//         if(data){
+//             HeartSensorData.create(JSON.parse(message.toString()))
+//             .then(data=>{
+//                 console.log("add successful")
+//             })
+//             .catch(err=>{
+//                 console.log(err)
+//                 console.log("broker error")
+//             })
+//         }else{
+//             console.log("device khong ton tai")
+//         }
+//     })
+//     .catch(err=>{
+//         console.log("connect bd error")
+//     })
+
+ 
+// })
   
 
-app.use(session({
-    secret: 'keyboard cat',
-    cookie:{
-        maxAge: 3600000
-    }
-  }))
 
-const port=process.env.PORT||3000
+
+const port=3000
 
 app.use(bodyParser.urlencoded({
     extended:false

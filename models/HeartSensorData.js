@@ -3,13 +3,18 @@ const Schema=mongoose.Schema;
 
 
 const heartSensorDataSchema=new Schema({
-    id_device: {
+    Id: {
         type: String,
         required: true
     },
-    value:{
-        type: Number,
-        required: true
+    heartRate:{
+        type: Number
+    },
+    bodyTemperature:{
+        type:Number
+    },
+    bloodPressure:{
+        type:Number
     },
     create:{
         type: Date,

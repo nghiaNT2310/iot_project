@@ -2,7 +2,8 @@ const express=require('express')
 const Account=require('../models/Account')
 const router=express.Router()
 const bcrypt=require('bcrypt')
-const {CheckLoginHasData,CheckLoginNoData}=require('../Middleware/CheckLogin')
+const {CheckLoginHasData,CheckLoginNoData,CheckLoginForLogout}=require('../Middleware/CheckLogin')
+var jwt=require('jsonwebtoken')
 
 
 
@@ -12,7 +13,7 @@ router.post('/register',(req,res)=>{
     else{
         Account.create(req.body)
         .then(data=>{
-            res.json("register successful")
+            res.status(200).json("register successful")
         })
         .catch(err=>{
             console.log(err)
@@ -30,15 +31,18 @@ router.post('/login',(req,res)=>{
             if(data){
                 bcrypt.compare(req.body.password,data.password,(err,same)=>{
                     if(same){
-                        req.session.userid=data._id;
-                        res.json("login successful")
+
+                        var token=jwt.sign({_id:data._id},'nghiango')
+                        res.status(200).json(token)
+
+                        
                     }else{
                         
-                        res.status(400).json("Password incorrect")
+                        res.status(402).json("Password incorrect")
                     }
                 })
             }else{
-                res.status(400).json("Username incorrect")
+                res.status(403).json("Username incorrect")
             }
         })
         .catch(err=>{
@@ -48,24 +52,20 @@ router.post('/login',(req,res)=>{
 })
 
 
-router.get('/logout',(req,res)=>{
-    req.session.destroy(()=>{
-        res.json("logout successful")
-    })
-})
+
 
 router.get('/information',CheckLoginHasData,(req,res)=>{
     var newInfo=req.body.user
     if(newInfo.password) delete newInfo.password
-    res.json(newInfo)
+    res.status(200).json(newInfo)
 })
 
-router.put('/information',CheckLoginNoData,(req,res)=>{
+router.put('/information',CheckLoginForLogout,(req,res)=>{
     var newInfo=req.body
     if(req.body.password) delete newInfo.password
-    Account.findByIdAndUpdate(req.session.userid,newInfo)
+    Account.findByIdAndUpdate(req.headers._id,newInfo)
     .then(data=>{
-        Account.findById(req.session.userid)
+        Account.findById(req.headers._id)
         .then(data=>{
             res.json(data)
         })
@@ -79,24 +79,24 @@ router.put('/information',CheckLoginNoData,(req,res)=>{
     
 })
 
-router.put('/changePassword',CheckLoginNoData,(req,res)=>{
-    if(!req.body.username || !req.body.password) res.status(400).json("Missing data!")
+router.put('/changePassword',CheckLoginForLogout,(req,res)=>{
+    if(!req.body.oldPassword || !req.body.newPassword) res.status(400).json("Missing data!")
     else{    
-        Account.findById(req.session.userid)
+        Account.findById(req.headers._id)
         .then(data=>{
             bcrypt.compare(req.body.oldPassword,data.password,(err,same)=>{
                 if(same){
                     bcrypt.hash(req.body.newPassword,10,(err,hash)=>{
-                        Account.findByIdAndUpdate(req.session.userid,{password: hash})
+                        Account.findByIdAndUpdate(req.headers._id,{password: hash})
                         .then(data=>{
-                            res.json("Change Password successful")
+                            res.status(200).json("Change Password successful")
                         })
                         .catch(err=>{
                             res.status(500).json("server error")
                         })
                     })
                 }else{
-                    res.status(400).json("Old Password incorrect")
+                    res.status(408).json("Old Password incorrect")
                 }
             })
         })
