@@ -5,7 +5,7 @@ var CheckLoginHasData=(req,res,next)=>{
         try{
             
             let token=req.headers.token
-            token=token.slice(1,token.length-1)
+            //token=token.slice(1,token.length-1)
             console.log(token)
             let data=jwt.verify(token,'nghiango')
             console.log(data)
@@ -39,7 +39,7 @@ var CheckLoginForLogout=(req,res,next)=>{
         try{
            
             let token=req.headers.token
-            token=token.slice(1,token.length-1)
+            //token=token.slice(1,token.length-1)
             let data=jwt.verify(token,'nghiango')
             Account.findById(data._id)
             .then(data=>{
@@ -71,7 +71,7 @@ var CheckLoginNoData=(req,res,next)=>{
         try{
          
             let token=req.headers.token
-            token=token.slice(1,token.length-1)
+           // token=token.slice(1,token.length-1)
             let data=jwt.verify(token,'nghiango')
             console.log(data)
             Account.findById(data._id)
