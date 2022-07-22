@@ -18,9 +18,10 @@ router.get('/:id',CheckLoginHasData,(req,res)=>{
                         item.Id=i.Id
                         item.heartRate=i.heartRate
                         item.bodyTemperature=i.bodyTemperature
-                        item.bloodPressure=i.bloodPressure
+                        item.systolic=i.systolic
+                        item.diastolic=i.diastolic
                         let date=new Date(i.create)
-                        
+                        date.setHours(date.getHours()+7);
                         item.create=date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" "+date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear()
                         console.log(item)
                         return item;

@@ -13,7 +13,10 @@ const heartSensorDataSchema=new Schema({
     bodyTemperature:{
         type:Number
     },
-    bloodPressure:{
+    systolic:{
+        type:Number
+    },
+    diastolic:{
         type:Number
     },
     create:{
