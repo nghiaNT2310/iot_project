@@ -23,7 +23,19 @@ router.get('/:id',CheckLoginHasData,(req,res)=>{
                         let date=new Date(i.create)
                         date.setHours(date.getHours()+7);
                         item.create=date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" "+date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear()
-                        console.log(item)
+                        let content="";
+                        if(i.heartRate<60) content=content+="Nhịp tim chậm\n"
+                        else if(req.body.user.age){
+                            if(i.heartRate>220-req.body.user.age){
+                                content+="Nhịp tim quá nhanh\n"
+                            }else if(i.heartRate>100) content+="Nhịp tim nhanh\n"
+                        }else if(i.heartRate>100) content+="Nhịp tim nhanh\n"
+                        if(i.bodyTemperature>40) content+="Sốt quá cao\n"
+                        else if(i.bodyTemperature>39) content+="Sốt cao\n"
+                        else if(i.bodyTemperature>38) content+="Hơi sốt\n"
+                        if(content!="") item.content=content;
+                        console.log(content)
+                        console.log(item) 
                         return item;
                     })
                     
