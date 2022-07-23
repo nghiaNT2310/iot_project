@@ -34,7 +34,7 @@ router.get('/:id',CheckLoginHasData,(req,res)=>{
                         else if(i.bodyTemperature>39) content+="Sốt cao\n"
                         else if(i.bodyTemperature>38) content+="Hơi sốt\n"
                         if(content!="") item.content=content;
-                        console.log("content:",content)
+                        console.log("content: ",content)
                         console.log(item) 
                         return item;
                     })
