@@ -63,6 +63,8 @@ router.get('/information',CheckLoginHasData,(req,res)=>{
 router.put('/information',CheckLoginForLogout,(req,res)=>{
     var newInfo=req.body
     if(req.body.password) delete newInfo.password
+    if(req.body.username) delete newInfo.username
+
     Account.findByIdAndUpdate(req.headers._id,newInfo)
     .then(data=>{
         Account.findById(req.headers._id)
