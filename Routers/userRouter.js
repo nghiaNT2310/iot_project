@@ -4,10 +4,11 @@ const router=express.Router()
 const bcrypt=require('bcrypt')
 const {CheckLoginHasData,CheckLoginNoData,CheckLoginForLogout}=require('../Middleware/CheckLogin')
 var jwt=require('jsonwebtoken')
+const userController = require('../controllers/userController')
 
 
 
-
+/*
 router.post('/register',(req,res)=>{
     if(!req.body.username || !req.body.password) res.status(400).json("Missing data!")
     else{
@@ -107,6 +108,15 @@ router.put('/changePassword',CheckLoginForLogout,(req,res)=>{
         })
     }
 })
+*/
+router.post('/register',userController.register)
+
+router.post('/login',userController.login)
 
 
+router.put('/information',CheckLoginForLogout,userController.updateInformation)
+
+router.get('/information',CheckLoginHasData,userController.getInfomation)
+
+router.put('/changePassword',CheckLoginForLogout,userController.changPassword)
 module.exports=router

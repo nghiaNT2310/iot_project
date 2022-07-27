@@ -3,7 +3,8 @@ const router=express.Router()
 const HeartSensorData=require('../models/HeartSensorData')
 const HeartSensor=require('../models/HeartSensor')
 const {CheckLoginHasData,CheckLoginNoData,CheckLoginForLogout}=require('../Middleware/CheckLogin')
-
+const sensorDataController=require("../controllers/sensorDataController")
+/*
 router.get('/:id',CheckLoginHasData,(req,res)=>{
     HeartSensor.findOne({Id:req.params.id})
     .then(device=>{
@@ -58,5 +59,6 @@ router.get('/:id',CheckLoginHasData,(req,res)=>{
     })
     
 })
-
+*/
+router.get('/:id',CheckLoginHasData,sensorDataController.getSensorData)
 module.exports=router

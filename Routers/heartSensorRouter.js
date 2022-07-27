@@ -3,6 +3,8 @@ const router=express.Router()
 const {CheckLoginHasData,CheckLoginNoData,CheckLoginForLogout}=require('../Middleware/CheckLogin')
 const HeartSensor=require('../models/HeartSensor')
 const Account=require('../models/Account')
+const sensorController=require('../controllers/sensorControler')
+/*
 router.get("/",CheckLoginHasData,(req,res)=>{
     HeartSensor.find({username:req.body.user.username})
     .then(data=>{
@@ -61,5 +63,13 @@ router.delete("/:id",CheckLoginNoData,(req,res)=>{
         res.status(500).json("server error")
     })
 })
+*/
 
+router.get("/",CheckLoginHasData,sensorController.getSensors)
+
+router.post("/",CheckLoginForLogout,sensorController.addSensor)
+
+router.put("/:id",CheckLoginNoData,sensorController.updateSensor)
+
+router.delete("/:id",CheckLoginNoData,sensorController.deleteSensor)
 module.exports=router
