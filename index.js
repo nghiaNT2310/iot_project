@@ -66,7 +66,6 @@ app.use(bodyParser.json())
 async function connect() {
     try {
         await mongoose.connect('mongodb+srv://nghiango:nghiango23102001@cluster0.pjnmw.mongodb.net/IOT?retryWrites=true&w=majority', {
-           
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
